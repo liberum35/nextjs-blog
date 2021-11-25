@@ -13,7 +13,7 @@ export default function Home() {
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
         <Link href="page1">
-          <a>page2</a>
+          <a>page1</a>
         </Link>
         <Link href="page2">
           <a>page2</a>

@@ -1,44 +1,80 @@
-import Head from 'next/head'
-import Link from 'next/link'
-import React from 'react'
-import Button from '@mui/material/Button'
 import Slider from '@mui/material/Slider'
 import Typography from '@mui/material/Typography';
+import file1 from '../files/0000001.json'
+import {useState} from "react";
+import axios from "axios";
+import {InputLabel, MenuItem, Select} from "@mui/material";
 //import Slider from 'rc-slider';
 //import 'rc-slider/assets/index.css';
 
-function log(value) {
-    console.log(value);
-}
+function Row({selection, setSelection}) {
+    console.log('render Row', selection)
 
-function Row() {
-    const [value2, setValue] = React.useState([10,20]);
     const handleSliderChange = (event, newValue) => {
-        setValue(newValue);
-        log(value2[0]);
-        log(value2[1]);
+        const newSelection = {...selection}
+        newSelection.startSelection = newValue[0];
+        newSelection.endSelection = newValue[1];
+        setSelection(newSelection.id, newSelection);
     }
+
+    const handleSelect = ({}) => {
+        const newSelection = {...selection}
+        newSelection.startSelection = newValue[0];
+        newSelection.endSelection = newValue[1];
+        setSelection(newSelection.id, newSelection);
+    }
+    //const menuType = ['<MenuItem value={10}>none</MenuItem>','<MenuItem value={10}>Причина</MenuItem>','<MenuItem value={10}>Причина</MenuItem>']
     return (
         <div>
-
-            <Slider defaultValue={value2} onChange={handleSliderChange}  />
-            <Typography>First:{value2[0]} Second:{value2[1]}</Typography>
+            <Slider value={[selection.startSelection, selection.endSelection]} onChange={handleSliderChange}/>
+            <Typography>First:{selection.startSelection} Second:{selection.endSelection} Type:{selection.type}</Typography>
+            <InputLabel id="demo-simple-select-label">Age</InputLabel>
+            <Select onChange={handleSelect}>
+                <MenuItem value='none'>none</MenuItem>
+                <MenuItem value='Причина'>Причина</MenuItem>
+            </Select>
         </div>
     )
 }
 
 
-const list = ["<Row />","<Row />"];
-log(list);
-function app() {
-     return (
-         <>
-             <Row />
-             <Row />
-             {list}
+const app = () => {
+    const [file, setFile] = useState(file1);
 
-         </>
-    )
-}
+    const setSelection = (id, selection) => {
+        const newFile = {...file};
 
-export default  app;
+        newFile.selections = newFile.selections.map(currentSelection => {
+            if (currentSelection.id === id) {
+                currentSelection = {...selection};
+            }
+            return currentSelection;
+        });
+
+        setFile(newFile);
+    };
+
+    const sendFile = () => {
+        axios.post('/api/save', {file})
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                // handle error
+                console.log(error);
+            })
+            .then(function () {
+                // always executed
+            });
+    };
+
+    return <>
+        {file.selections.map(selectionItem => {
+            return <Row selection={selectionItem} setSelection={setSelection} key={selectionItem.id}/>;
+        })}
+
+        <button onClick={sendFile}>Отправить</button>
+    </>;
+};
+
+export default app;
