@@ -7,7 +7,7 @@ import {InputLabel, MenuItem, Select} from "@mui/material";
 //import Slider from 'rc-slider';
 //import 'rc-slider/assets/index.css';
 
-function Row({selection, setSelection}) {
+function Row({selection, setSelection, type}) {
     console.log('render Row', selection)
 
     const handleSliderChange = (event, newValue) => {
@@ -23,13 +23,13 @@ function Row({selection, setSelection}) {
         newSelection.endSelection = newValue[1];
         setSelection(newSelection.id, newSelection);
     }
-    //const menuType = ['<MenuItem value={10}>none</MenuItem>','<MenuItem value={10}>Причина</MenuItem>','<MenuItem value={10}>Причина</MenuItem>']
+
     return (
         <div>
             <Slider value={[selection.startSelection, selection.endSelection]} onChange={handleSliderChange}/>
             <Typography>First:{selection.startSelection} Second:{selection.endSelection} Type:{selection.type}</Typography>
             <InputLabel id="demo-simple-select-label">Age</InputLabel>
-            <Select onChange={handleSelect}>
+            <Select value='Причина' onChange={handleSelect}>
                 <MenuItem value='none'>none</MenuItem>
                 <MenuItem value='Причина'>Причина</MenuItem>
             </Select>
@@ -70,7 +70,7 @@ const app = () => {
 
     return <>
         {file.selections.map(selectionItem => {
-            return <Row selection={selectionItem} setSelection={setSelection} key={selectionItem.id}/>;
+            return <Row selection={selectionItem} setSelection={setSelection} key={selectionItem.id} type={selectionItem.type}/>;
         })}
 
         <button onClick={sendFile}>Отправить</button>
